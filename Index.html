@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Thiệp Tình Yêu ♡</title>
+<style>
+  :root{
+    --bg: #fff5f8;
+    --card: #ffffff;
+    --ink: #ff477e;
+    --ink2:#ff8fab;
+    --text:#333;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background: radial-gradient(1200px 800px at 20% -10%, #ffe9f0, #fff5f8 40%, #fff 100%);
+    font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    color:var(--text);
+    overflow-x:hidden;
+  }
+  .wrap{
+    max-width:880px; margin:0 auto; padding:18px 14px 80px;
+  }
+  header{
+    text-align:center; padding:16px 0 6px;
+  }
+  .title{
+    display:inline-block; padding:10px 18px; border-radius:18px;
+    background:linear-gradient(135deg,#ffd7e0, #ffeef3);
+    box-shadow: 0 10px 30px rgba(255,71,126,.15), 0 1px 0 #fff inset;
+    font-weight:700; letter-spacing:.4px; color:#b8144c;
+  }
+  .card{
+    background:var(--card); border-radius:22px; padding:18px;
+    box-shadow: 0 20px 60px rgba(255,71,126,.15), 0 2px 0 #fff inset;
+    position:relative; overflow:hidden;
+  }
+  .controls{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin:8px 0 16px;
+  }
+  .btn{
+    appearance:none; border:0; background:linear-gradient(135deg,#ff6b9c, #ff8fb2);
+    color:#fff; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
+    box-shadow: 0 8px 20px rgba(255,71,126,.25);
+  }
+  .btn.sec{
+    background:linear-gradient(135deg,#ffd7e0, #ffeef3); color:#b8144c; box-shadow: 0 6px 16px rgba(255,71,126,.15);
+  }
+  .btn:active{transform:translateY(1px)}
+  input[type=file]{display:none}
+
+  /* Gallery */
+  .gallery{
+    position:relative; width:100%; aspect-ratio: 16/10; border-radius:18px;
+    background: repeating-linear-gradient(45deg, #fff7fa, #fff7fa 12px, #fff 12px, #fff 24px);
+    overflow:hidden; user-select:none;
+  }
+  .slide-track{position:absolute; inset:0; display:flex; transition:transform .5s ease}
+  .slide{
+    min-width:100%; display:flex; align-items:center; justify-content:center; padding:22px;
+  }
+  .polaroid{
+    background:#fff; padding:12px 12px 26px; border-radius:12px; box-shadow: 0 14px 40px rgba(0,0,0,.12);
+    transform: rotate(var(--tilt, 0deg)); transition:transform .25s ease;
+  }
+  .polaroid:hover{ transform: rotate(0deg) scale(1.01); }
+  .polaroid img{ display:block; max-width: min(560px, 80vw); max-height: 52vh; border-radius:8px; }
+  .caption{ text-align:center; margin-top:8px; color:#b8144c; font-weight:700; opacity:.8; }
+
+  /* Dots */
+  .dots{ position:absolute; left:50%; bottom:10px; transform:translateX(-50%); display:flex; gap:6px}
+  .dot{ width:8px; height:8px; border-radius:50%; background:#ffd0df; box-shadow:0 1px 0 #fff inset; }
+  .dot.active{ background:#ff4f86 }
+
+  /* Message */
+  .msg{
+    margin-top:16px; padding:14px; border-radius:16px; background:linear-gradient(180deg,#fff8fb,#fff);
+    border:1px solid #ffe0ea; box-shadow:0 10px 30px rgba(255,71,126,.12) inset;
+  }
+  .msg label{font-weight:700; color:#b8144c}
+  .typewriter{
+    margin-top:6px; min-height:2.6em; line-height:1.6; font-size:1.05rem;
+  }
+  .tw-caret{ display:inline-block; width:1px; height:1.1em; background:#ff4f86; margin-left:2px; animation: blink .9s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0}}
+
+  /* Heart float */
+  .hearts{ position:fixed; pointer-events:none; inset:0; overflow:hidden;}
+  .heart{
+    position:absolute; font-size:18px; animation: floatUp 3.6s ease-out forwards; opacity:.8;
+    filter: drop-shadow(0 6px 10px rgba(255,71,126,.15));
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) scale(.8) rotate(0deg); }
+    100%{ transform: translateY(-120vh) scale(1.4) rotate(20deg); opacity:0; }
+  }
+
+  footer{ text-align:center; margin-top:16px; font-size:.9rem; color:#bf4069; opacity:.9 }
+  .tiny{ font-size:.8rem; opacity:.7 }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">Thiệp Tình Yêu cho em/anh ♡</div>
+  </header>
+
+  <div class="card">
+    <div class="controls">
+      <label class="btn">
+        Thêm ảnh
+        <input id="filePicker" type="file" accept="image/*" multiple>
+      </label>
+      <button class="btn sec" id="shuffle">Xếp lại ảnh</button>
+      <label class="btn sec">
+        Chọn nhạc
+        <input id="musicPicker" type="file" accept="audio/*">
+      </label>
+      <button class="btn" id="playPause">Phát</button>
+      <button class="btn sec" id="heartBurst">Bắn tim</button>
+    </div>
+
+    <div class="gallery" id="gallery">
+      <div class="slide-track" id="track"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="msg">
+      <label>Lời nhắn</label>
+      <div id="tw" class="typewriter"></div>
+      <div class="tiny">Gợi ý: Nhấn đúp vào lời nhắn để sửa nhanh.</div>
+    </div>
+  </div>
+
+  <footer>
+    Làm bằng cả trái tim 💖 — kéo chạm để thả tim 🫶
+  </footer>
+</div>
+
+<!-- floating hearts layer -->
+<div class="hearts" id="hearts"></div>
+
+<audio id="music" preload="metadata"></audio>
+
+<script>
+  // ===== Helper =====
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  // ===== Typewriter =====
+  const twEl = $('#tw');
+  const defaultMsg = `Gửi người tớ thương nhất trên đời,\n\nCảm ơn vì đã đến bên tớ. Mỗi bức ảnh là một kỷ niệm nhỏ xinh, ghép lại thành chúng mình. Yêu em/anh rất nhiều 🫶`;
+  let editing = false;
+
+  function typeText(el, text, speed=18){
+    el.innerHTML = '';
+    let i=0;
+    function step(){
+      if(i < text.length){
+        const ch = text[i];
+        el.innerHTML += (ch === '\n') ? '<br>' : ch;
+        i++;
+        setTimeout(step, ch === '.' || ch === ',' ? speed*2 : speed);
+      }else{
+        const caret = document.createElement('span');
+        caret.className = 'tw-caret';
+        el.appendChild(caret);
+      }
+    }
+    step();
+  }
+  typeText(twEl, defaultMsg);
+
+  // Double click to edit message
+  twEl.addEventListener('dblclick', () => {
+    if(editing) return;
+    editing = true;
+    const plain = twEl.innerText.replace(/\n+/g, '\n').trim();
+    const area = document.createElement('textarea');
+    area.style.width='100%'; area.style.height='140px';
+    area.style.border='0'; area.style.outline='none'; area.style.background='transparent';
+    area.style.font='inherit'; area.value = plain;
+    twEl.replaceWith(area);
+    area.focus();
+
+    area.addEventListener('blur', ()=>{
+      const newDiv = document.createElement('div');
+      newDiv.id='tw'; newDiv.className='typewriter';
+      area.replaceWith(newDiv);
+      typeText(newDiv, area.value || defaultMsg, 16);
+      editing=false;
+    });
+  });
+
+  // ===== Gallery logic =====
+  const picker = $('#filePicker');
+  const track = $('#track');
+  const dots  = $('#dots');
+  let photos = [];
+  let idx = 0;
+
+  picker.addEventListener('change', async (e)=>{
+    const files = [...e.target.files].slice(0,8);
+    photos = await Promise.all(files.map(f => fileToDataURL(f)));
+    renderSlides();
+  });
+
+  function renderSlides(){
+    track.innerHTML=''; dots.innerHTML='';
+    if(photos.length===0){
+      const empty = document.createElement('div');
+      empty.className='slide';
+      empty.innerHTML = `<div class="polaroid" style="--tilt:-2deg">
+        <img alt="placeholder" src="data:image/svg+xml;utf8,${encodeURIComponent(placeholderSVG())}">
+        <div class="caption">Thêm ảnh của hai đứa mình nha ♡</div>
+      </div>`;
+      track.appendChild(empty);
+      return;
+    }
+    photos.forEach((src,i)=>{
+      const slide = document.createElement('div'); slide.className='slide';
+      const tilt = (i%2? 2 : -3) + (Math.random()*2-1);
+      slide.innerHTML = `
+        <figure class="polaroid" style="--tilt:${tilt}deg">
+          <img src="${src}" alt="photo ${i+1}">
+          <figcaption class="caption">${i+1}/${photos.length}</figcaption>
+        </figure>`;
+      track.appendChild(slide);
+
+      const d = document.createElement('div'); d.className='dot'; if(i===0) d.classList.add('active'); dots.appendChild(d);
+    });
+    idx=0; track.style.transform=`translateX(0)`;
+  }
+
+  function placeholderSVG(){
+    return `
+      <svg xmlns='http://www.w3.org/2000/svg' width='800' height='520'>
+        <defs>
+          <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stop-color='#ffe3ec'/>
+            <stop offset='100%' stop-color='#fff'/>
+          </linearGradient>
+        </defs>
+        <rect width='100%' height='100%' fill='url(#g)'/>
+        <g font-family='sans-serif' fill='#b8144c' text-anchor='middle'>
+          <text x='50%' y='48%' font-size='28'>Chưa có ảnh</text>
+          <text x='50%' y='58%' font-size='16' opacity='.7'>Nhấn “Thêm ảnh” phía trên nè</text>
+        </g>
+        <g opacity='.08'>
+          <circle cx='120' cy='120' r='90' fill='#ff6b9c'/>
+          <circle cx='720' cy='420' r='110' fill='#ff6b9c'/>
+        </g>
+      </svg>`;
+  }
+
+  function fileToDataURL(file){
+    return new Promise((res,rej)=>{
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // Swipe / drag to change slide
+  let startX=null;
+  track.addEventListener('touchstart', e=> startX = e.touches[0].clientX, {passive:true});
+  track.addEventListener('touchmove',  e=>{
+    if(startX==null) return;
+    const dx = e.touches[0].clientX - startX;
+    track.style.transform = `translateX(${ -idx*100 + dx/window.innerWidth*100 }%)`;
+  }, {passive:true});
+  track.addEventListener('touchend', e=>{
+    if(startX==null) return; const endX = e.changedTouches[0].clientX; const dx = endX - startX; startX=null;
+    if(Math.abs(dx) > 40){ if(dx<0) next(); else prev(); } else snap();
+  });
+
+  // Mouse drag (desktop)
+  let isDown=false, mx=0, moved=false;
+  track.addEventListener('mousedown', e=>{ isDown=true; mx=e.clientX; moved=false; });
+  window.addEventListener('mousemove', e=>{
+    if(!isDown) return;
+    const dx = e.clientX - mx; moved = true;
+    track.style.transform = `translateX(${ -idx*100 + dx/window.innerWidth*100 }%)`;
+  });
+  window.addEventListener('mouseup', e=>{
+    if(!isDown) return; isDown=false;
+    const dx = e.clientX - mx;
+    if(Math.abs(dx) > 60){ if(dx<0) next(); else prev(); } else snap();
+  });
+
+  function snap(){ track.style.transform=`translateX(${-idx*100}%)`; setDots(); }
+  function next(){ if(photos.length===0) return; idx=Math.min(idx+1, photos.length-1); snap(); }
+  function prev(){ if(photos.length===0) return; idx=Math.max(idx-1, 0); snap(); }
+  function setDots(){ $$('.dot').forEach((d,i)=> d.classList.toggle('active', i===idx)); }
+
+  $('#shuffle').addEventListener('click', ()=>{
+    for(let i=photos.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [photos[i], photos[j]] = [photos[j], photos[i]];
+    }
+    renderSlides();
+  });
+
+  // ===== Music =====
+  const musicPicker = $('#musicPicker');
+  const music = $('#music');
+  const playBtn = $('#playPause');
+  let hasMusic = false, playing = false;
+
+  musicPicker.addEventListener('change', async (e)=>{
+    const file = e.target.files?.[0];
+    if(!file) return;
+    music.src = URL.createObjectURL(file);
+    hasMusic = true; playing=false;
+    playBtn.textContent = 'Phát';
+  });
+
+  playBtn.addEventListener('click', async ()=>{
+    try{
+      if(!hasMusic){
+        // gentle hint if no music chosen yet
+        heartBurst(10);
+        playBtn.textContent = 'Chọn nhạc trước ♫';
+        setTimeout(()=> playBtn.textContent='Phát', 1200);
+        return;
+      }
+      if(!playing){ await music.play(); playing=true; playBtn.textContent='Tạm dừng'; }
+      else { music.pause(); playing=false; playBtn.textContent='Phát'; }
+    }catch(err){ console.log(err); }
+  });
+
+  // ===== Hearts =====
+  const heartsLayer = $('#hearts');
+  function heartBurst(n=24, x=null, y=null){
+    const ww = window.innerWidth, wh = window.innerHeight;
+    for(let i=0;i<n;i++){
+      const h = document.createElement('div');
+      h.className='heart';
+      h.textContent = Math.random()<0.25 ? '💞' : (Math.random()<0.6 ? '💖' : '💗');
+      const left = (x ?? Math.random()*ww);
+      const top  = (y ?? (wh-10));
+      h.style.left = (left + (Math.random()*60-30)) + 'px';
+      h.style.top  = (top + (Math.random()*20-10)) + 'px';
+      h.style.animationDuration = (2.8 + Math.random()*1.6)+'s';
+      h.style.transform = `translateY(0) scale(${.8+Math.random()*0.7}) rotate(${(Math.random()*30-15)}deg)`;
+      heartsLayer.appendChild(h);
+      setTimeout(()=> h.remove(), 4000);
+    }
+  }
+  document.addEventListener('click', e=> heartBurst(12, e.clientX, e.clientY));
+  $('#heartBurst').addEventListener('click', ()=> heartBurst(28));
+
+  // initial gentle hearts
+  setTimeout(()=> heartBurst(18), 800);
+</script>
+</body>
+</html>
